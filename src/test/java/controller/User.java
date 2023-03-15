@@ -26,98 +26,66 @@ public class User extends Setup {
 
 
 
-    public void callLoginApi() throws ConfigurationException {
-        UserModel loginModel = new UserModel("salman@roadtocareer.net", "1234");
+    public JsonPath callLoginAPI(String email, String password) throws ConfigurationException {
+        UserModel loginModel=new UserModel(email, password);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
                         .contentType("application/json")
                         .body(loginModel)
                         .when()
-                        .post("/user/login")
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
+                        .post("/user/login");
 
 
-        JsonPath jsonPath = res.jsonPath();
-        String token = jsonPath.get("token");
-        String message = jsonPath.get("message");
-        Utils.setEnvVariable("token", token);
 
-        System.out.println(token);
-        System.out.println(message);
-        setMessage(message);
+        return  res.jsonPath();
 
     }
-    public void callLoginApiWithInvalidEmail() throws ConfigurationException {
-        UserModel loginModel = new UserModel("salman@ggr", "1234");
+    
+
+
+    public JsonPath createCustomer1(String name, String email,String password,String phone_number,String nid,String role) throws ConfigurationException {
+        Utils utils = new Utils();
+        utils.generateRandomUser();
+        UserModel regModel = new UserModel(name,email,password,phone_number,nid,role);
+
         RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .body(loginModel)
-                        .when()
-                        .post("/user/login")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-    }
-
-
-
-    public void callLoginApiWithInvalidPassword() throws ConfigurationException {
-        UserModel loginModel = new UserModel("salman@roadtocareer.net", "123");
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .body(loginModel)
-                        .when()
-                        .post("/user/login")
-                        .then()
-                        .assertThat().statusCode(401).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-    }
-
-
-
-
-
-    public void getUserByInvalidPhoneNumber() throws ConfigurationException, IOException {
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        ;
         Response res =
                 given()
                         .contentType("application/json")
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/user/search/phonenumber/26459875646")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
+                        .body(regModel)
+                        .post("/user/create");
+
+
+
+        return res.jsonPath();
+
+
+    }
+
+
+
+    public JsonPath createCustomer2(String name, String email,String password,String phone_number,String nid,String role) throws ConfigurationException {
+        Utils utils = new Utils();
+        utils.generateRandomUser();
+        UserModel regModel = new UserModel(name,email,password,phone_number,nid,role);
+
+        RestAssured.baseURI = prop.getProperty("baseUrl");
+        Response res =
+                given()
+                        .contentType("application/json")
+                        .header("Authorization", prop.getProperty("token"))
+                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
+                        .body(regModel)
+                        .post("/user/create");
 
 
 
 
+        return res.jsonPath();
 
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        //System.out.println(jsonPath.get("user").toString());
-        setMessage(message);
 
     }
 
@@ -125,9 +93,30 @@ public class User extends Setup {
 
 
 
+    public JsonPath createAgent(String name, String email,String password,String phone_number,String nid,String role) throws ConfigurationException {
+        Utils utils = new Utils();
+        utils.generateRandomUser();
+
+        UserModel regModel = new UserModel(name,email,password,phone_number,nid,role);
+        RestAssured.baseURI = prop.getProperty("baseUrl");
+        Response res =
+                given()
+                        .contentType("application/json")
+                        .header("Authorization", prop.getProperty("token"))
+                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
+                        .body(regModel)
+                        .post("/user/create");
+
+
+
+        return res.jsonPath();
+
+
+
+    }
     public void getUserByPhoneNumber() throws ConfigurationException, IOException {
         RestAssured.baseURI = prop.getProperty("baseUrl");
-        ;
+        //UserModel phoneNumber = new UserModel(phone_number);
         Response res =
                 given()
                         .contentType("application/json")
@@ -135,6 +124,7 @@ public class User extends Setup {
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .when()
                         .get("/user/search/phonenumber/"+prop.getProperty("customer1_phone_number"))
+                        //.get("/user/search/phonenumber/"+phoneNumber)
                         .then()
                         .assertThat().statusCode(200).extract().response();
 
@@ -142,155 +132,6 @@ public class User extends Setup {
 
         JsonPath jsonPath = res.jsonPath();
         //System.out.println(jsonPath.get("user").toString());
-
-    }
-
-
-
-
-    public void createCustomerWithExistingCreds() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel regModel = new UserModel("Cicely Collier", "starr.dickens@yahoo.com", "1234", "01700844539", "010030056", "Customer");
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(regModel)
-                        .post("/user/create")
-                        .then()
-                        .assertThat().statusCode(208).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-
-    }
-
-
-
-
-
-    public void createCustomer1() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel regModel = new UserModel(utils.getName(), utils.getEmail(), "1234", utils.generatePhoneNumber(), "010030056", "Customer");
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(regModel)
-                        .post("/user/create")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        Utils.setEnvVariable("customer1_id",jsonPath.get("user.id").toString());
-        Utils.setEnvVariable("customer1_name",jsonPath.get("user.name"));
-        Utils.setEnvVariable("customer1_email",jsonPath.get("user.email"));
-        Utils.setEnvVariable("customer1_phone_number",jsonPath.get("user.phone_number"));
-
-
-    }
-
-
-
-    public void createCustomer2() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel regModel = new UserModel(utils.getName(), utils.getEmail(), "1234", utils.generatePhoneNumber(), "010030056", "Customer");
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(regModel)
-                        .post("/user/create")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        Utils.setEnvVariable("customer2_id",jsonPath.get("user.id").toString());
-        Utils.setEnvVariable("customer2_name",jsonPath.get("user.name"));
-        Utils.setEnvVariable("customer2_email",jsonPath.get("user.email"));
-        Utils.setEnvVariable("customer2_phone_number",jsonPath.get("user.phone_number"));
-
-
-    }
-
-
-
-
-    public void createAgentWithExistingCreds() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel regModel = new UserModel("Raul Gleason", "mee.adams@hotmail.com", "1234", "01700737689", "010030056", "Agent");
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(regModel)
-                        .post("/user/create")
-                        .then()
-                        .assertThat().statusCode(208).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-
-    }
-
-
-
-    public void createAgent() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel regModel = new UserModel(utils.getName(), utils.getEmail(), "1234", utils.generatePhoneNumber(), "010030056", "Agent");
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(regModel)
-                        .post("/user/create")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        Utils.setEnvVariable("agent_id",jsonPath.get("user.id").toString());
-        Utils.setEnvVariable("agent_name",jsonPath.get("user.name"));
-        Utils.setEnvVariable("agent_email",jsonPath.get("user.email"));
-        Utils.setEnvVariable("agent_phone_number",jsonPath.get("user.phone_number"));
-
 
     }
 
@@ -303,3 +144,7 @@ public class User extends Setup {
 
 
 }
+
+
+
+
