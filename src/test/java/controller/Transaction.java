@@ -23,11 +23,12 @@ public class Transaction extends Setup {
     private int currentBalance;
 
 
-    public void depositToInvalidAgent(){
+
+    public void depositToAgent(String from_account,String to_account,int amount){
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel("SYSTEM","023154654",5000);
+        UserModel transModel = new UserModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -36,54 +37,31 @@ public class Transaction extends Setup {
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .body(transModel)
                         .when()
-                        .post("/transaction/deposit")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
+                        .post("/transaction/deposit");
 
-
-        JsonPath jsonPath = res.jsonPath();
-        System.out.println(jsonPath.get().toString());
-
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-
-
-    }
-
-    public void depositToAgent(){
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel transModel = new UserModel("SYSTEM",prop.getProperty("agent_phone_number"),5000);
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(transModel)
-                        .when()
-                        .post("/transaction/deposit")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
 
 
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
         System.out.println(message);
+        setMessage(message);
         //System.out.println(jsonPath.get().toString());
 
 
 
     }
 
-    public void depositInsufficientToCustomer1() throws ConfigurationException {
+
+
+
+
+
+
+    public void depositToCustomer1(String from_account,String to_account,int amount) throws ConfigurationException {
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(prop.getProperty("agent_phone_number"),prop.getProperty("customer1_phone_number"),500000);
+        UserModel transModel = new UserModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -92,44 +70,15 @@ public class Transaction extends Setup {
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .body(transModel)
                         .when()
-                        .post("/transaction/deposit")
-                        .then()
-                        .assertThat().statusCode(208).extract().response();
+                        .post("/transaction/deposit");
+
 
 
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
-        setMessage(message);
-
-
-
-    }
-
-
-
-
-
-    public void depositToCustomer1() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel transModel = new UserModel(prop.getProperty("agent_phone_number"),prop.getProperty("customer1_phone_number"),2000);
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(transModel)
-                        .when()
-                        .post("/transaction/deposit")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
+        System.out.println(message);
         Utils.setEnvVariable("customer1_trnxID",jsonPath.get("trnxId"));
+        setMessage(message);
         //System.out.println(message);
         //System.out.println(jsonPath.get().toString());
 
@@ -155,8 +104,7 @@ public class Transaction extends Setup {
 
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
-        /*System.out.println(message);
-        System.out.println(jsonPath.get().toString());*/
+
         setMessage(message);
 
 
@@ -167,28 +115,6 @@ public class Transaction extends Setup {
 
     }
 
-    public void checkInvalidCustomerBalance(){
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/transaction/balance/06546544454")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-
-
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        /*System.out.println(message);
-        System.out.println(jsonPath.get().toString());*/
-        setMessage(message);
-
-    }
 
     public void checkCustomerStatementByTrnxId(){
         RestAssured.baseURI = prop.getProperty("baseUrl");
@@ -206,41 +132,20 @@ public class Transaction extends Setup {
 
         JsonPath jsonPath = res.jsonPath();
         String message = jsonPath.get("message");
-        /*System.out.println(message);
-        System.out.println(jsonPath.get().toString());*/
-        setMessage(message);
-
-    }
-
-    public void checkCustomerStatementByInvalidTrnxId(){
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/transaction/search/TXN595")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        /*System.out.println(message);
-        System.out.println(jsonPath.get().toString());*/
+        System.out.println(message);
+        //System.out.println(jsonPath.get().toString());*/
         setMessage(message);
 
     }
 
 
-    public void withdrawByCustomer() throws ConfigurationException {
+
+    public JsonPath withdrawByCustomer(String from_account,String to_account,int amount) throws ConfigurationException {
 
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(prop.getProperty("customer1_phone_number"),prop.getProperty("agent_phone_number"),1000);
+        UserModel transModel = new UserModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -249,27 +154,27 @@ public class Transaction extends Setup {
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .body(transModel)
                         .when()
-                        .post("/transaction/withdraw")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
+                        .post("/transaction/withdraw");
+
 
 
         JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        int currentBalance = jsonPath.get("currentBalance");
-        Utils.setEnvVariable("customer1_balance",jsonPath.get("currentBalance").toString());
-        setMessage(String.valueOf(currentBalance));
+        String message = jsonPath.get("message");
+
+        return res.jsonPath();
+
 
 
     }
 
 
-    public void withdrawByCustomerToInvalidAgent() throws ConfigurationException {
 
+
+    public JsonPath sendMoneyToAnotherCustomer(String from_account,String to_account,int amount) throws ConfigurationException {
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(prop.getProperty("customer1_phone_number"),"65894665464",1000);
+        UserModel transModel = new UserModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -278,95 +183,14 @@ public class Transaction extends Setup {
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .body(transModel)
                         .when()
-                        .post("/transaction/withdraw")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
+                        .post("/transaction/sendmoney");
 
 
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-
-    }
-
-    public void sendMoneyToAnotherCustomer() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel transModel = new UserModel(prop.getProperty("customer1_phone_number"),prop.getProperty("customer2_phone_number"),500);
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(transModel)
-                        .when()
-                        .post("/transaction/sendmoney")
-                        .then()
-                        .assertThat().statusCode(201).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        int currentBalance = jsonPath.get("currentBalance");
-        Utils.setEnvVariable("customer1_balance",jsonPath.get("currentBalance").toString());
-        setMessage(String.valueOf(currentBalance));
+        return res.jsonPath();
 
     }
 
 
-    public void sendMoneyToAnotherInvalidCustomer() throws ConfigurationException {
-        Utils utils = new Utils();
-        utils.generateRandomUser();
-
-        UserModel transModel = new UserModel(prop.getProperty("customer1_phone_number"),"65498698236",500);
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .body(transModel)
-                        .when()
-                        .post("/transaction/sendmoney")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get().toString());
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-    }
-
-
-    public void checkCustomerStatementByWrongNumber(){
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/transaction/statement/01489683465")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        /*System.out.println(message);
-        System.out.println(jsonPath.get().toString());*/
-        setMessage(message);
-
-    }
 
 
     public void checkCustomerStatement(){
@@ -390,23 +214,6 @@ public class Transaction extends Setup {
         setMessage(message);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
