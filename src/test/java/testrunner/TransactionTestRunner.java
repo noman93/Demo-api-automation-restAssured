@@ -66,54 +66,36 @@ public class TransactionTestRunner extends Setup {
 
 
     public void checkInvalidCustomerBalance() throws IOException {
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/transaction/balance/06546544454")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
 
-
-
-
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        Assert.assertTrue(message.contains("User not found"));
+       transaction = new Transaction();
+       String phone_number = "06546544454";
+       JsonPath jsonPath=transaction.checkCustomerBalance(phone_number);
+       String message = jsonPath.get("message");
+       Assert.assertTrue(message.contains("User not found"));
 
     }
+
     @Test(priority = 16,description = "Check customer balance successfully with valid customer number")
 
 
 
     public void checkCustomerBalance() throws IOException {
         transaction = new Transaction();
-        transaction.checkCustomerBalance();
-        Assert.assertTrue(transaction.getMessage().contains("User balance"));
+        String phone_number = prop.getProperty("customer1_phone_number");
+        JsonPath jsonPath=transaction.checkCustomerBalance(phone_number);
+        String message = jsonPath.get("message");
+        Assert.assertTrue(message.contains("User balance"));
     }
     @Test(priority = 17,description = "Transaction not found if search by invalid trnxID")
 
 
     public void searchByInvalidTrnxID() throws IOException {
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/transaction/search/TXN595")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-
-        JsonPath jsonPath = res.jsonPath();
+        transaction = new Transaction();
+        String trnx_id = "TXN595";
+        JsonPath jsonPath=transaction.checkCustomerStatementByTrnxId(trnx_id);
         String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("Transaction not found"));
+
 
 
     }
@@ -121,8 +103,10 @@ public class TransactionTestRunner extends Setup {
 
     public void searchByTrnxID() throws IOException {
         transaction = new Transaction();
-        transaction.checkCustomerStatementByTrnxId();
-        Assert.assertTrue(transaction.getMessage().contains("Transaction list"));
+        String trnx_id = prop.getProperty("customer1_trnxID");
+        JsonPath jsonPath=transaction.checkCustomerStatementByTrnxId(trnx_id);
+        String message = jsonPath.get("message");
+        Assert.assertTrue(message.contains("Transaction list"));
     }
     @Test(priority = 19,description = "Can not withdraw by customer if agent number is invalid")
     public void withdrawByCustomerToInvalidAgent() throws IOException, ConfigurationException {
@@ -171,20 +155,9 @@ public class TransactionTestRunner extends Setup {
 
     public void checkStatementByWrongNumber() throws IOException {
 
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/transaction/statement/01489683465")
-                        .then()
-                        .assertThat().statusCode(404).extract().response();
-
-
-
-        JsonPath jsonPath = res.jsonPath();
+        transaction = new Transaction();
+        String phone_number = "01489683465";
+        JsonPath jsonPath=transaction.checkCustomerStatement(phone_number);
         String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("User not found"));
 
@@ -193,8 +166,10 @@ public class TransactionTestRunner extends Setup {
 
     public void checkCustomerStatement() throws IOException {
         transaction = new Transaction();
-        transaction.checkCustomerStatement();
-        Assert.assertTrue(transaction.getMessage().contains("Transaction list"));
+        String phone_number = prop.getProperty("customer1_phone_number");
+        JsonPath jsonPath=transaction.checkCustomerStatement(phone_number);
+        String message = jsonPath.get("message");
+        Assert.assertTrue(message.contains("Transaction list"));
 
     }
 
