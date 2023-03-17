@@ -114,24 +114,20 @@ public class User extends Setup {
 
 
     }
-    public void getUserByPhoneNumber() throws ConfigurationException, IOException {
+    public JsonPath getUserByPhoneNumber(String phone_number) throws ConfigurationException, IOException {
         RestAssured.baseURI = prop.getProperty("baseUrl");
-        //UserModel phoneNumber = new UserModel(phone_number);
         Response res =
                 given()
                         .contentType("application/json")
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .when()
-                        .get("/user/search/phonenumber/"+prop.getProperty("customer1_phone_number"))
-                        //.get("/user/search/phonenumber/"+phoneNumber)
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
+                        .get("/user/search/phonenumber/"+phone_number+"");
 
 
 
-        JsonPath jsonPath = res.jsonPath();
-        //System.out.println(jsonPath.get("user").toString());
+     
+        return res.jsonPath();
 
     }
 
