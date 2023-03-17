@@ -124,30 +124,19 @@ public class UserTestRunner extends Setup {
 
 
     public void searchUserByInvalidPhoneNumber() throws ConfigurationException, IOException {
-        RestAssured.baseURI = prop.getProperty("baseUrl");
-        Response res =
-                given()
-                        .contentType("application/json")
-                        .header("Authorization", prop.getProperty("token"))
-                        .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
-                        .when()
-                        .get("/user/search/phonenumber/26459875646");
 
-
-
-
-
-
-        JsonPath jsonPath = res.jsonPath();
+        user = new User();
+        String phone_number = "26459875646";
+        JsonPath jsonPath= user.getUserByPhoneNumber(phone_number);
         String message = jsonPath.get("message");
         Assert.assertTrue(message.contains("User not found"));
 
     }
-
     @Test(priority = 10,description = "User found successfully by search using valid registered phone number")
     public void searchUserByPhoneNumber() throws ConfigurationException, IOException {
         user = new User();
-        user.getUserByPhoneNumber();
+        String phone_number = prop.getProperty("customer1_phone_number");
+        user.getUserByPhoneNumber(phone_number);
 
     }
 
