@@ -79,15 +79,14 @@ public class Transaction extends Setup {
         System.out.println(message);
         Utils.setEnvVariable("customer1_trnxID",jsonPath.get("trnxId"));
         setMessage(message);
-        //System.out.println(message);
-        //System.out.println(jsonPath.get().toString());
+        
 
 
 
 
     }
 
-    public void checkCustomerBalance(){
+    public JsonPath checkCustomerBalance(String phone_number){
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -95,28 +94,16 @@ public class Transaction extends Setup {
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .when()
-                        .get("/transaction/balance/"+prop.getProperty("customer1_phone_number"))
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
+                        .get("/transaction/balance/"+phone_number+"");
 
 
-
-
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-
-        setMessage(message);
-
-
-
-
-
+        return res.jsonPath();
 
 
     }
 
 
-    public void checkCustomerStatementByTrnxId(){
+    public JsonPath checkCustomerStatementByTrnxId(String trnx_id){
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -124,17 +111,12 @@ public class Transaction extends Setup {
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .when()
-                        .get("/transaction/search/"+prop.getProperty("customer1_trnxID"))
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
+                        .get("/transaction/search/"+trnx_id+"");
 
 
 
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        System.out.println(message);
-        //System.out.println(jsonPath.get().toString());*/
-        setMessage(message);
+
+        return res.jsonPath();
 
     }
 
@@ -193,7 +175,7 @@ public class Transaction extends Setup {
 
 
 
-    public void checkCustomerStatement(){
+    public JsonPath checkCustomerStatement(String phone_number){
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -201,17 +183,11 @@ public class Transaction extends Setup {
                         .header("Authorization", prop.getProperty("token"))
                         .header("X-AUTH-SECRET-KEY", prop.getProperty("partnerKey"))
                         .when()
-                        .get("/transaction/statement/"+prop.getProperty("customer1_phone_number"))
-                        .then()
-                        .assertThat().statusCode(200).extract().response();
+                        .get("/transaction/statement/"+phone_number+"");
 
 
 
-        JsonPath jsonPath = res.jsonPath();
-        String message = jsonPath.get("message");
-        /*System.out.println(message);
-        System.out.println(jsonPath.get().toString());*/
-        setMessage(message);
+        return res.jsonPath();
 
     }
 
@@ -219,3 +195,4 @@ public class Transaction extends Setup {
 
 
 }
+
