@@ -5,7 +5,8 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import lombok.Getter;
 import lombok.Setter;
-import model.UserModel;
+import model.TransactionModel;
+
 import org.apache.commons.configuration.ConfigurationException;
 import setup.Setup;
 import utils.Utils;
@@ -28,7 +29,7 @@ public class Transaction extends Setup {
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(from_account,to_account,amount);
+        TransactionModel transModel = new TransactionModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -61,7 +62,7 @@ public class Transaction extends Setup {
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(from_account,to_account,amount);
+        TransactionModel transModel = new TransactionModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -79,7 +80,8 @@ public class Transaction extends Setup {
         System.out.println(message);
         Utils.setEnvVariable("customer1_trnxID",jsonPath.get("trnxId"));
         setMessage(message);
-        
+        //System.out.println(message);
+        //System.out.println(jsonPath.get().toString());
 
 
 
@@ -127,7 +129,7 @@ public class Transaction extends Setup {
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(from_account,to_account,amount);
+        TransactionModel transModel = new TransactionModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -156,7 +158,7 @@ public class Transaction extends Setup {
         Utils utils = new Utils();
         utils.generateRandomUser();
 
-        UserModel transModel = new UserModel(from_account,to_account,amount);
+        TransactionModel transModel = new TransactionModel(from_account,to_account,amount);
         RestAssured.baseURI = prop.getProperty("baseUrl");
         Response res =
                 given()
@@ -195,4 +197,3 @@ public class Transaction extends Setup {
 
 
 }
-
