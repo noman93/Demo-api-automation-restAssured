@@ -1,5 +1,5 @@
-# Dmoney API Automation using Rest Assured
-### This is a complete project where a Dmoney API Testing is automated by using Rest Assured.
+# Demo Digital Wallet  API Automation using Rest Assured
+### This is a complete project where a Demo Digital Wallet  API Testing is automated by using Rest Assured.
 
 ## Scenerio
 1. Call login API
